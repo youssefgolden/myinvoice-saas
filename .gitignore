@@ -1,0 +1,39 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+*.log
+logs/
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Env files
+.env
+.env.*.local
+backend/.env
+frontend/.env
+
+# Build outputs
+dist/             # NestJS build
+.next/            # Next.js build
+out/              # Next.js export
+build/
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Prisma (si jamais utilisé)
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+
+# Mac / VSCode / IDEs
+.DS_Store
+.vscode/
+.idea/
