@@ -7,7 +7,7 @@ Github CICD , Jest, Sonar
 ## Backend progress
 - [x] TypeORM config (Render SSL)
 - [x] Entities: User, Client, BusinessProfile, Invoice
-- [ ] Entity: InvoiceItem
+- [x] Entity: InvoiceItem
 - [ ] DTO + Controllers + Services
 - [ ] Auth (JWT)
 - [ ] PDF endpoint

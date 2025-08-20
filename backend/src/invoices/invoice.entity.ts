@@ -13,7 +13,7 @@ export class Invoice {
   @ManyToOne(() => Client, { eager: true, nullable: true, onDelete: 'SET NULL' }) client: Client | null ; // relation with User table
 
   
-  @Column({ type: 'varchar', length: 40 , }) invoiceNumber: string;            // invoiceNumber
+  @Column({ type: 'varchar', length: 40 }) invoiceNumber: string;            // invoiceNumber
   @Column({ type: 'date'}) issueDate: string;           // issueDate
   @Column({ type: 'date', nullable: true }) dueDate: string | null ;           // dueDate
   @Column({ type: 'varchar',length: 3,   default: 'USD' }) currency: string;           // currency
