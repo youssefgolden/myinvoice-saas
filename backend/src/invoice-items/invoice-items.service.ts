@@ -11,7 +11,7 @@ import { InvoiceCalcService } from 'src/invoices/invoice-calc.service';
 export class InvoiceItemsService {
   constructor(
     @InjectRepository(InvoiceItem) private readonly itemRepo: Repository<InvoiceItem>,  //itemRepo will create, edit and remove InvoiceItem
-    @InjectRepository(Invoice) private readonly invRepo: Repository<Invoice>,  //invRepo the same for Invoice
+    @InjectRepository(Invoice) private readonly invRepo: Repository<Invoice>,  //invRepo will create, edit and remove Invoice
     private readonly calc: InvoiceCalcService, //my privates calc functions
   ) {}
 

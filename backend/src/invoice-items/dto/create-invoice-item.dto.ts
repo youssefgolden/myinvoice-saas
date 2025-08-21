@@ -19,3 +19,4 @@ export class CreateInvoiceItemDto {
   @IsOptional() @Matches(MONEY_2DP)
   taxPercent?: string;    // default "0"
 }
+
