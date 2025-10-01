@@ -8,54 +8,46 @@ import { InvoicesModule } from './invoices/invoices.module';
 import { InvoiceItemsModule } from './invoice-items/invoice-items.module';
 import { AuthModule } from './auth/auth.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // TypeOrmModule.forRootAsync({
-    //   inject: [ConfigService],
-    //   useFactory: (config: ConfigService) => {
-    //     const url = config.get<string>('DATABASE_URL');
-    //     const isRender = url?.includes('render.com') || url?.includes('sslmode=require');
-    //     return {
-    //       type: 'postgres',
-    //       url,
-    //       autoLoadEntities: true,
-    //       synchronize: false,      
-    //       logging: true,
-    //       ssl: isRender
-    //         ? { rejectUnauthorized: false } 
-    //         : undefined,
-    //     };
-    //   },
-    // }),
+
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const url = config.get<string>('DATABASE_URL');
-        const dbSslFlag = (config.get<string>('DB_SSL') || 'false').toLowerCase() === 'true';
-    
-        // Sanity checks utiles en prod:
-        if (!url) {
-          throw new Error('DATABASE_URL is not set');
-        }
-    
-        // SSL options pour Render External URL (ou tout endpoint qui exige TLS)
-        const sslOn = dbSslFlag ? { rejectUnauthorized: false } as const : false;
-    
+        if (!url) throw new Error('DATABASE_URL is not set');
+
+        // 1) Si DB_SSL est défini -> on l’utilise
+        // 2) Sinon on déduit :
+        //    - URL host contient ".internal" -> pas de SSL
+        //    - sinon -> SSL ON (cas External URL Render)
+        const explicit = config.get<string>('DB_SSL');
+        const host = (() => {
+          try { return new URL(url).hostname; } catch { return ''; }
+        })();
+
+        const inferredSsl = host.includes('.internal') ? false : true;
+        const dbSsl = explicit != null
+          ? explicit.toLowerCase() === 'true'
+          : inferredSsl;
+
+        // Options pg pour SSL (compat Render / cert manquant)
+        const sslOption = dbSsl ? { rejectUnauthorized: false } : false;
+
         return {
           type: 'postgres',
-          url,                       // ex: postgres://...render.com:5432/trezly_db?ssl=true
+          url,                  // ex External: ...render.com:5432/db?ssl=true
+                                // ex Internal: ...internal:5432/db
           autoLoadEntities: true,
-          synchronize: false,        // garde false en prod
-          logging: true,             // tu peux passer à false après debug
-          ssl: sslOn,                // <- clé pour pg
-          // certain clients pg exigent aussi "extra.ssl"
-          ...(dbSslFlag ? { extra: { ssl: { rejectUnauthorized: false } } } : {}),
+          synchronize: false,   // true seulement en dev ponctuel si tu sais ce que tu fais
+          logging: true,        // passe à false quand tout est stable
+          ssl: sslOption,
+          ...(dbSsl ? { extra: { ssl: { rejectUnauthorized: false } } } : {}),
         };
       },
     }),
-    
+
     UsersModule,
     ClientsModule,
     BusinessProfilesModule,
